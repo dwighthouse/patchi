@@ -5,11 +5,11 @@ const act = freeze({
     createEmptyObject: freeze({}),
     createEmptyArray: freeze({}),
     changeArrayItem: freeze({}),
-    addArrayItem: freeze({}),
+    insertArrayItem: freeze({}),
     removeArrayItem: freeze({}),
 });
 
-const arrayActions = [act.changeArrayItem, act.addArrayItem, act.removeArrayItem];
+const arrayActions = [act.changeArrayItem, act.insertArrayItem, act.removeArrayItem];
 
 const isObject = (v) => {
     return v !== null && !Array.isArray(v) && typeof v === 'object';
@@ -60,12 +60,18 @@ const deepSetArray = (source, changes) => {
 
     changes.forEach((change) => {
         if (
+            // Non-array
             !Array.isArray(change) ||
-            !arrayActions.includes(change[0]) ||
+            // Not the right action
+            arrayActions.indexOf(change[0]) === -1 ||
+            // Index not a number
             typeof change[1] !== 'number' ||
+            // Index less than 0
             change[1] < 0 ||
+            // For add or change, missing final value
             (change.length < 3 && change[0] !== act.removeArrayItem) ||
-            (change[1] >= source.length && change[0] !== act.addArrayItem)
+            // For change or remove, index beyond the bounds of array
+            (change[1] >= source.length && change[0] !== act.insertArrayItem)
         ) {
             throw new Error('Malformed array modification syntax.');
         }
@@ -86,16 +92,20 @@ const deepSetArray = (source, changes) => {
         }
 
         // First change detected, make a copy of values
-        newArray = source.slice();
+        if (newArray === source) {
+            newArray = source.slice();
+        }
 
         if (type === act.changeArrayItem) {
             newArray[index] = newValue;
         }
-        else if (type === act.addArrayItem) {
+        else if (type === act.insertArrayItem) {
             if (index < newArray.length) {
+                // Insert into
                 newArray.splice(index, 0, newValue);
             }
             else {
+                // Add at index beyond bounds of array
                 newArray[index] = newValue;
             }
         }
@@ -120,7 +130,9 @@ const deepSetObject = (source, changes) => {
         }
 
         // First change detected, make a copy of values
-        newObject = Object.assign({}, source);
+        if (newObject === source) {
+            newObject = Object.assign({}, source);
+        }
 
         // Actually delete the key, don't just assign it to undefined
         if (newValue === act.deleteKey) {
@@ -143,8 +155,6 @@ const patchi = (source, changes) => {
     return genNewValue(source, changes);
 };
 
-Object.defineProperty(patchi, 'act', {
-    value: act,
-});
+patchi.act = act;
 
-module.exports = patchi;
+module.exports = freeze(patchi);

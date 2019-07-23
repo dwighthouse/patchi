@@ -1,31 +1,43 @@
 {
-  "name": "deep-set-immutable",
-  "version": "0.0.1",
-  "description": "Using structured cloning, create new objects with changes applied if an only if an actual change occurred.",
-  "main": "index.js",
+  "name": "patchi",
+  "version": "1.0.0",
+  "description": "Original data and change data goes in, immutably applied patched data comes out. Maximizes saved references while minimizing iteration.",
   "scripts": {
     "test": "nyc tape tests/index.js | tap-nyc",
     "test-details": "tape tests/index.js",
-    "test-browser": "./node_modules/gulp/bin/gulp.js test-browser"
+    "test-browser": "./node_modules/gulp/bin/gulp.js test-browser",
+    "build": "./node_modules/gulp/bin/gulp.js build"
   },
   "author": "Dwight House",
   "license": "MIT",
+  "main": "./dist/patchi.umd.min.js",
+  "module": "./dist/patchi.esm.min.js",
+  "esnext": "./dist/patchi.esm.min.js",
+  "files": [
+    "./dist/*.min.js"
+  ],
   "nyc": {
     "temp-directory": "./node_modules/coverage/.nyc_output",
     "exclude": [
       "**/tests/**/*.*"
     ]
   },
-  "dependencies": {
-    "ipatch": "0.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@babel/core": "7.5.5",
+    "@babel/plugin-transform-object-assign": "7.2.0",
+    "@babel/preset-env": "7.5.5",
     "browser-sync": "2.26.7",
     "browserify": "16.3.0",
     "del": "5.0.0",
     "gulp": "4.0.2",
+    "gulp-babel": "8.0.0",
     "gulp-file": "0.4.0",
+    "gulp-rename": "1.4.0",
+    "gulp-terser": "1.2.0",
     "nyc": "14.1.1",
+    "rollup": "1.17.0",
+    "rollup-plugin-commonjs": "10.0.1",
     "tap-nyc": "1.0.3",
     "tape": "4.11.0",
     "vinyl-buffer": "1.0.1",

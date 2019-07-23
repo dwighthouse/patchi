@@ -1,6 +1,16 @@
 const test = require('tape');
 const patchi = require('../../src/patchi.js');
 
+const areEqual = (x, y) => {
+    if (x === y) {
+        // Handle non-equality of -0 and 0
+        return x !== 0 || 1 / x === 1 / y;
+    }
+
+    // Handle non-equality of NaN
+    return x !== x && y !== y;
+};
+
 test('Deep change normal value', (t) => {
     t.plan(7);
 
@@ -114,9 +124,9 @@ test('Deep non-change NaN value is equal', (t) => {
     t.equal(source.a, output.a);
     t.equal(source.b, output.b);
     t.equal(source.b.c, output.b.c);
-    t.ok(Object.is(source.b.c.d, output.b.c.d));
+    t.ok(areEqual(source.b.c.d, output.b.c.d));
     t.equal(source.b.e, output.b.e);
-    t.ok(Object.is(output.b.c.d, NaN));
+    t.ok(areEqual(output.b.c.d, NaN));
 });
 
 test('Deep non-change -0 value is equal', (t) => {
@@ -144,9 +154,9 @@ test('Deep non-change -0 value is equal', (t) => {
     t.equal(source.a, output.a);
     t.equal(source.b, output.b);
     t.equal(source.b.c, output.b.c);
-    t.ok(Object.is(source.b.c.d, output.b.c.d));
+    t.ok(areEqual(source.b.c.d, output.b.c.d));
     t.equal(source.b.e, output.b.e);
-    t.ok(Object.is(output.b.c.d, -0));
+    t.ok(areEqual(output.b.c.d, -0));
 });
 
 test('Deep change -0 value', (t) => {
@@ -174,9 +184,9 @@ test('Deep change -0 value', (t) => {
     t.equal(source.a, output.a);
     t.notEqual(source.b, output.b);
     t.notEqual(source.b.c, output.b.c);
-    t.notOk(Object.is(source.b.c.d, output.b.c.d));
+    t.notOk(areEqual(source.b.c.d, output.b.c.d));
     t.equal(source.b.e, output.b.e);
-    t.ok(Object.is(output.b.c.d, -0));
+    t.ok(areEqual(output.b.c.d, -0));
 });
 
 test('Deep non-change with empty object', (t) => {

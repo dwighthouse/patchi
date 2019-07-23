@@ -391,7 +391,7 @@ test('Adding item to start', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.addArrayItem, 0, 'front'],
+            [patchi.act.insertArrayItem, 0, 'front'],
         ],
     });
 
@@ -425,7 +425,7 @@ test('Adding item to middle', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.addArrayItem, 1, 'middle'],
+            [patchi.act.insertArrayItem, 1, 'middle'],
         ],
     });
 
@@ -459,7 +459,7 @@ test('Adding item to end', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.addArrayItem, 3, 'end'],
+            [patchi.act.insertArrayItem, 3, 'end'],
         ],
     });
 
@@ -493,7 +493,7 @@ test('Adding item past end', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.addArrayItem, 6, 'past end'],
+            [patchi.act.insertArrayItem, 6, 'past end'],
         ],
     });
 
@@ -525,7 +525,7 @@ test('Invalid format for array add causes throw: missing item to add', (t) => {
     try {
         const output = patchi(source, {
             a: [
-                [patchi.act.addArrayItem, 0],
+                [patchi.act.insertArrayItem, 0],
             ],
         });
         t.ok(output === false);
@@ -550,7 +550,7 @@ test('Invalid format for array add causes throw: negative index', (t) => {
     try {
         const output = patchi(source, {
             a: [
-                [patchi.act.addArrayItem, -1, 'negative'],
+                [patchi.act.insertArrayItem, -1, 'negative'],
             ],
         });
         t.ok(output === false);
@@ -758,4 +758,25 @@ test('Array changes can be nested and can retain the same references if nothing 
 
     t.equal(source, output);
     t.deepEqual(source, output);
+});
+
+test('Non-change with empty array', (t) => {
+    t.plan(2);
+
+    const source = {
+        a: [
+            [
+                1,
+                2,
+            ],
+            {},
+        ],
+    };
+
+    const output = patchi(source, {
+        a: [],
+    });
+
+    t.equal(source, output);
+    t.equal(source.a, output.a);
 });

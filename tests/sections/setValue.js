@@ -1,6 +1,16 @@
 const test = require('tape');
 const patchi = require('../../src/patchi.js');
 
+const areEqual = (x, y) => {
+    if (x === y) {
+        // Handle non-equality of -0 and 0
+        return x !== 0 || 1 / x === 1 / y;
+    }
+
+    // Handle non-equality of NaN
+    return x !== x && y !== y;
+};
+
 test('Change normal value', (t) => {
     t.plan(3);
 
@@ -44,7 +54,7 @@ test('Non-change NaN value is equal', (t) => {
     });
 
     t.equal(source, output);
-    t.ok(Object.is(source.a, output.a));
+    t.ok(areEqual(source.a, output.a));
 });
 
 test('Non-change -0 value is equal', (t) => {
@@ -59,7 +69,7 @@ test('Non-change -0 value is equal', (t) => {
     });
 
     t.equal(source, output);
-    t.ok(Object.is(source.a, output.a));
+    t.ok(areEqual(source.a, output.a));
 });
 
 test('Change -0 value', (t) => {
@@ -74,7 +84,7 @@ test('Change -0 value', (t) => {
     });
 
     t.notEqual(source, output);
-    t.notOk(Object.is(source.a, output.a));
+    t.notOk(areEqual(source.a, output.a));
 });
 
 test('Non-change with empty object', (t) => {

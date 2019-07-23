@@ -1,49 +1,133 @@
 # patchi
 
-NOT READY FOR PRODUCTION USE
+Original data and change data goes in, immutably applied patched data comes out. Maximizes saved references while minimizing iteration.
 
-Method for deeply applying changes to an object or array using structured cloning with grouped iteration. Changes will be applied with the minimum possible changes to references.
 
-* 100% Test Coverage
-* Handles Symbol keys
+## Features
+
+* **Fully Immutable** - The original value will never be modified.
+* **References Maintained** - The minimum possible references will be changed when applying the changes.
+* **Minimal Iteration** - Each object and array in the data tree is only visited once no matter how many changes are made.
+* **Changes Stack** - Multiple changes to the same object or array happen in sequence at the same time, rather than modifying the entire object for each change.
+* **Symbol Keys** - Handles Symbol in objects, if the environment supports them.
+* **Key Deletion** - Available way of removing a key from an object, not just replacing it's value with undefined.
+* **Root Primitive Support** - Passing root values that are not arrays or objects simply returns the new value.
+* **100% Test Coverage**
+* **No Dependencies** - Absolutely none.
+* **Module Choice** - Available as both ESM and UMD format.
+* **Wide Support** - Supports Chrome, Safari, Firefox, Edge, Node, and IE11. (Should work with IE9 and up, but those tests have not been run yet.)
+
+
+## Install
+
+```bash
+> npm i --save patchi
+```
 
 
 
 ## Usage
 
-**Change an object**
+### Change an object
 ```javascript
 var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
 
 var source = {
     a: {
         b: {
             c: 4,
+            d: 2,
         },
     },
-    d: {},
+    e: {
+        same: 1,
+    },
 };
 
-var output = patchi(source, {
+var out = patchi(source, {
     a: {
         b: {
-            c: 2,
+            c: 3,
         },
     },
 });
 
-// Output: {a: {b: c: 2}}, d: {}}, where d's object reference is identical, but all others differ
+// out = {a: {b: {c: 3, d: 2}}, e: { same: 1 }}
+//       e's object reference (same) is identical
+//       All other references differ
 ```
 
-**Change an item in an array**
+
+
+### Remove an object key entirely
 ```javascript
 var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
 
 var source = {
-    a: [1, 2, 3, {}],
+    a: {
+        b: 2,
+    },
+    e: {
+        same: 1,
+    },
 };
 
-var output = patchi(source, {
+var out = patchi(source, {
+    a: {
+        b: patchi.act.deleteKey,
+    },
+});
+
+// out = {a: {}, e: { same: 1 }}
+//       e's object reference (same) is identical
+//       All other references differ
+```
+
+
+
+### Set value to new empty object
+
+Because passing an empty object of change instructions will result in no changes, a special command must be used to set the value to a new, empty object. This will always create a new reference, even if the original value was an empty object.
+
+```javascript
+var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
+
+var source = {
+    a: {
+        b: {
+            c: 4,
+            d: 2,
+        },
+    },
+    e: {
+        same: 1,
+    },
+};
+
+var out = patchi(source, {
+    a: patchi.act.createEmptyObject,
+});
+
+// out = {a: {}, e: { same: 1 }}
+//       e's object reference (same) is identical
+//       All other references differ
+```
+
+
+
+### Change an item in an array
+```javascript
+var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
+
+var source = {
+    a: [1, 2, 3, { same: 1 }],
+};
+
+var out = patchi(source, {
     a: [
         [
             patchi.act.changeArrayItem,
@@ -53,46 +137,107 @@ var output = patchi(source, {
     ],
 });
 
-// Output: {a: [10, 2, 3, {}]}, where the final object's reference is identical, but the top level object and the a array differ
+// out = {a: [10, 2, 3, { same: 1 }]}
+//       'same' object's reference is identical
+//       All other references differ
 ```
 
-**Add an item to an array**
+
+
+### Insert an item into an array
+
+_Note: Items can be added at indices past the end of the existing array, creating empty array values between it and the former last item._
+
 ```javascript
 var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
 
 var source = {
-    a: [1, 2, 3, {}],
+    a: [1, 2, 3, { same: 1 }],
 };
 
-var output = patchi(source, {
+var out = patchi(source, {
     a: [
         [
-            patchi.act.addArrayItem,
-            1,   // Index of add
+            patchi.act.insertArrayItem,
+            1,   // Index of injection location
             1.5, // Added Value
         ],
     ],
 });
 
-// Output: {a: [1, 1.5, 2, 3, {}]}, where the final object's reference is identical, but the top level object and the a array differ
+// out = {a: [1, 1.5, 2, 3, { same: 1 }]}
+//       'same' object's reference is identical
+//       All other references differ
 ```
-_Note: Items can be added past the end of the existing array._
+
+
+
+### Remove an item from an array
+```javascript
+var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
+
+var source = {
+    a: [1, 2, 3, { same: 1 }],
+};
+
+var out = patchi(source, {
+    a: [
+        [
+            patchi.act.removeArrayItem,
+            2, // Index of removal location
+        ],
+    ],
+});
+
+// out = {a: [1, 2, { same: 1 }]}
+//       'same' object's reference is identical
+//       All other references differ
+```
+
+
+
+### Set value to new empty array
+
+Because passing an empty array of change instructions will result in no changes, a special command must be used to set the value to a new, empty array. This will always create a new reference, even if the original value was an empty array.
+
+```javascript
+var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
+
+var source = {
+    a: [1, 2, 3, { same: 1 }],
+};
+
+var out = patchi(source, {
+    a: patchi.act.createEmptyArray,
+});
+
+// out = {a: []}
+//       All references differ
+```
+
 
 
 
 ## Run Tests
 
-**In Node**
+### In Node
 
 ```bash
 > npm run test
 ```
 
-**In Browser**
+### In Browser
+
 ```bash
 > npm run test-browser
 ```
 
 
 
-TODO: Handle case of multiple array changes in sequence, make sure it's applying to the new list, not the old.
+## Build
+```bash
+> npm run build
+```
