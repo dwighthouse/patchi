@@ -120,6 +120,9 @@ var out = patchi(source, {
 
 
 ### Change an item in an array
+
+_Note: Changes to an array can be nested. Multiple changes to a single array can occur in sequence, each change adding to the last._
+
 ```javascript
 var patchi = require('patchi');
 // or `import patchi from 'patchi';` with appropriate build system
@@ -217,6 +220,36 @@ var out = patchi(source, {
 
 // out = {a: []}
 //       All references differ
+```
+
+
+
+### Changes that do not effect the final value do not change anything, leaving the references the same
+```javascript
+var patchi = require('patchi');
+// or `import patchi from 'patchi';` with appropriate build system
+
+var source = {
+    a: 1,
+    b: 2,
+    c: [
+        3,
+    ]
+};
+
+var out = patchi(source, {
+    a: 1,
+    c: [
+        [
+            patchi.act.changeArrayItem,
+            0,  // Index of change
+            3, // New Value
+        ],
+    ]
+});
+
+// out === source
+// Exactly equal, reference maintained
 ```
 
 
