@@ -1,6 +1,6 @@
 {
   "name": "patchi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Original data and change data goes in, immutably applied patched data comes out. Maximizes saved references while minimizing iteration.",
   "scripts": {
     "test": "nyc tape tests/index.js | tap-nyc",
@@ -10,11 +10,13 @@
   },
   "author": "Dwight House",
   "license": "MIT",
+  "repository": "dwighthouse/patchi",
+  "homepage": "https://github.com/dwighthouse/patchi",
   "main": "./dist/patchi.umd.min.js",
   "module": "./dist/patchi.esm.min.js",
   "esnext": "./dist/patchi.esm.min.js",
   "files": [
-    "./dist/*.min.js"
+    "dist/*.min.js"
   ],
   "nyc": {
     "temp-directory": "./node_modules/coverage/.nyc_output",

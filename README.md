@@ -14,6 +14,7 @@ Original data and change data goes in, immutably applied patched data comes out.
 * **Root Primitive Support** - Passing root values that are not arrays or objects simply returns the new value.
 * **100% Test Coverage**
 * **No Dependencies** - Absolutely none.
+* **642 Bytes Minzipped (ESM)** - 903 Bytes Minzipped (UMD)
 * **Module Choice** - Available as both ESM and UMD format.
 * **Wide Support** - Supports Chrome, Safari, Firefox, Edge, Node, and IE11. (Should work with IE9 and up, but those tests have not been run yet.)
 
