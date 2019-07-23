@@ -1,0 +1,34 @@
+{
+  "name": "deep-set-immutable",
+  "version": "0.0.1",
+  "description": "Using structured cloning, create new objects with changes applied if an only if an actual change occurred.",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc tape tests/index.js | tap-nyc",
+    "test-details": "tape tests/index.js",
+    "test-browser": "./node_modules/gulp/bin/gulp.js test-browser"
+  },
+  "author": "Dwight House",
+  "license": "MIT",
+  "nyc": {
+    "temp-directory": "./node_modules/coverage/.nyc_output",
+    "exclude": [
+      "**/tests/**/*.*"
+    ]
+  },
+  "dependencies": {
+    "ipatch": "0.0.1"
+  },
+  "devDependencies": {
+    "browser-sync": "2.26.7",
+    "browserify": "16.3.0",
+    "del": "5.0.0",
+    "gulp": "4.0.2",
+    "gulp-file": "0.4.0",
+    "nyc": "14.1.1",
+    "tap-nyc": "1.0.3",
+    "tape": "4.11.0",
+    "vinyl-buffer": "1.0.1",
+    "vinyl-source-stream": "2.0.0"
+  }
+}

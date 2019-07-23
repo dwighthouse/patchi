@@ -1,0 +1,9 @@
+require('../tests/sections/arrayChanges.js');
+require('../tests/sections/arrayRoot.js');
+require('../tests/sections/deepSetValue.js');
+require('../tests/sections/objectSymbols.js');
+require('../tests/sections/propertyChanges.js');
+require('../tests/sections/rootValue.js');
+require('../tests/sections/setEmptyValues.js');
+require('../tests/sections/setTypeCrossover.js');
+require('../tests/sections/setValue.js');
