@@ -16,7 +16,7 @@ test('Change array value with same value results in no change', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 0, 1],
+            [patchi.act.change, 0, 1],
         ],
     });
 
@@ -49,7 +49,7 @@ test('Change value below array with same value results in no change', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 2, {
+            [patchi.act.change, 2, {
                 d: 4,
             }],
         ],
@@ -85,7 +85,7 @@ test('Change array value at start', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 0, 'first'],
+            [patchi.act.change, 0, 'first'],
         ],
     });
 
@@ -118,7 +118,7 @@ test('Change array value in middle', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 1, 'middle'],
+            [patchi.act.change, 1, 'middle'],
         ],
     });
 
@@ -150,7 +150,7 @@ test('Change array value at end', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 2, 'last'],
+            [patchi.act.change, 2, 'last'],
         ],
     });
 
@@ -180,7 +180,7 @@ test('Change value below array causes change', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 2, {
+            [patchi.act.change, 2, {
                 e: 5,
             }],
         ],
@@ -201,8 +201,8 @@ test('Change value below array causes change', (t) => {
     });
 });
 
-test('Invalid format for array change causes throw: index beyond bounds of list', (t) => {
-    t.plan(1);
+test('Change value after the end of the array just adds the value to that index', (t) => {
+    t.plan(4);
 
     const source = {
         a: [
@@ -214,19 +214,19 @@ test('Invalid format for array change causes throw: index beyond bounds of list'
         ],
     };
 
-    try {
-        const output = patchi(source, {
-            a: [
-                [patchi.act.changeArrayItem, 3, 'after'],
-            ],
-        });
-        t.ok(output === false);
-    } catch (e) {
-        t.ok(true);
-    }
+    const output = patchi(source, {
+        a: [
+            [patchi.act.change, 3, 'after'],
+        ],
+    });
+
+    t.notEqual(source, output);
+    t.notEqual(source.a, output.a);
+    t.equal(source.a[2], output.a[2]);
+    t.equal(output.a[3], 'after')
 });
 
-test('Invalid format for array change causes throw: negative index', (t) => {
+test('Negative index converts to string key on array object', (t) => {
     t.plan(1);
 
     const source = {
@@ -242,41 +242,17 @@ test('Invalid format for array change causes throw: negative index', (t) => {
     try {
         const output = patchi(source, {
             a: [
-                [patchi.act.changeArrayItem, -1, 'negative'],
+                [patchi.act.change, -1, 'negative'],
             ],
         });
-        t.ok(output === false);
-    } catch (e) {
-        t.ok(true);
-    }
-});
 
-test('Invalid format for array change causes throw: no new value specified', (t) => {
-    t.plan(1);
-
-    const source = {
-        a: [
-            1,
-            2,
-            {
-                d: 4,
-            },
-        ],
-    };
-
-    try {
-        const output = patchi(source, {
-            a: [
-                [patchi.act.changeArrayItem, 0],
-            ],
-        });
         t.ok(output === false);
     } catch(e) {
         t.ok(true);
     }
 });
 
-test('Invalid format for array change causes throw: empty', (t) => {
+test('Not specifying the value sets the value to undefined', (t) => {
     t.plan(1);
 
     const source = {
@@ -289,19 +265,15 @@ test('Invalid format for array change causes throw: empty', (t) => {
         ],
     };
 
-    try {
-        const output = patchi(source, {
-            a: [
-                [],
-            ],
-        });
-        t.ok(output === false);
-    } catch(e) {
-        t.ok(true);
-    }
+    const output = patchi(source, {
+        a: [
+            [patchi.act.change, 0],
+        ],
+    });
+    t.ok(output.a[0] === void 0);
 });
 
-test('Invalid format for array change causes throw: wrong act type', (t) => {
+test('Assignment of normal data within array performs normal array assignment', (t) => {
     t.plan(1);
 
     const source = {
@@ -314,66 +286,17 @@ test('Invalid format for array change causes throw: wrong act type', (t) => {
         ],
     };
 
-    try {
-        const output = patchi(source, {
-            a: [
-                [patchi.act.createEmptyObject, 1, {}],
-            ],
-        });
-        t.ok(output === false);
-    } catch(e) {
-        t.ok(true);
-    }
-});
-
-test('Invalid format for array change causes throw: non-number index', (t) => {
-    t.plan(1);
-
-    const source = {
+    const output = patchi(source, {
         a: [
-            1,
-            2,
-            {
-                d: 4,
-            },
+            'lol',
         ],
-    };
+    });
 
-    try {
-        const output = patchi(source, {
-            a: [
-                [patchi.act.changeArrayItem, '1', 4],
-            ],
-        });
-        t.ok(output === false);
-    } catch(e) {
-        t.ok(true);
-    }
-});
-
-test('Invalid format for array change causes throw: non-array content', (t) => {
-    t.plan(1);
-
-    const source = {
+    t.deepEqual(output, {
         a: [
-            1,
-            2,
-            {
-                d: 4,
-            },
+            'lol',
         ],
-    };
-
-    try {
-        const output = patchi(source, {
-            a: [
-                'lol',
-            ],
-        });
-        t.ok(output === false);
-    } catch(e) {
-        t.ok(true);
-    }
+    });
 });
 
 test('Adding item to start', (t) => {
@@ -391,7 +314,7 @@ test('Adding item to start', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.insertArrayItem, 0, 'front'],
+            [patchi.act.insert, 0, 'front'],
         ],
     });
 
@@ -425,7 +348,7 @@ test('Adding item to middle', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.insertArrayItem, 1, 'middle'],
+            [patchi.act.insert, 1, 'middle'],
         ],
     });
 
@@ -459,7 +382,7 @@ test('Adding item to end', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.insertArrayItem, 3, 'end'],
+            [patchi.act.insert, 3, 'end'],
         ],
     });
 
@@ -493,7 +416,7 @@ test('Adding item past end', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.insertArrayItem, 6, 'past end'],
+            [patchi.act.insert, 6, 'past end'],
         ],
     });
 
@@ -509,7 +432,7 @@ test('Adding item past end', (t) => {
     t.equal('past end', output.a[6]);
 });
 
-test('Invalid format for array add causes throw: missing item to add', (t) => {
+test('Assigning insertion value that is empty inserts an undefined', (t) => {
     t.plan(1);
 
     const source = {
@@ -522,16 +445,22 @@ test('Invalid format for array add causes throw: missing item to add', (t) => {
         ],
     };
 
-    try {
-        const output = patchi(source, {
-            a: [
-                [patchi.act.insertArrayItem, 0],
-            ],
-        });
-        t.ok(output === false);
-    } catch(e) {
-        t.ok(true);
-    }
+    const output = patchi(source, {
+        a: [
+            [patchi.act.insert, 0],
+        ],
+    });
+
+    t.deepEqual(output, {
+        a: [
+            void 0,
+            1,
+            2,
+            {
+                d: 4,
+            },
+        ],
+    });
 });
 
 test('Invalid format for array add causes throw: negative index', (t) => {
@@ -550,7 +479,7 @@ test('Invalid format for array add causes throw: negative index', (t) => {
     try {
         const output = patchi(source, {
             a: [
-                [patchi.act.insertArrayItem, -1, 'negative'],
+                [patchi.act.insert, -1, 'negative'],
             ],
         });
         t.ok(output === false);
@@ -574,7 +503,7 @@ test('Removing item from front', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.removeArrayItem, 0],
+            [patchi.act.remove, 0],
         ],
     });
 
@@ -605,7 +534,7 @@ test('Removing item from middle', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.removeArrayItem, 1],
+            [patchi.act.remove, 1],
         ],
     });
 
@@ -636,7 +565,7 @@ test('Removing item from end', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.removeArrayItem, 2],
+            [patchi.act.remove, 2],
         ],
     });
 
@@ -647,6 +576,40 @@ test('Removing item from end', (t) => {
             1,
             2,
         ],
+    });
+});
+
+test('Removing multiple items affects the index', (t) => {
+    t.plan(3);
+
+    const source = {
+        a: [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+        ],
+    };
+
+    const output = patchi(source, {
+        a: [
+            [patchi.act.remove, 0],
+            [patchi.act.remove, 1],
+            [patchi.act.remove, 4],
+            [patchi.act.remove, 4],
+            [patchi.act.remove, 2],
+        ],
+    });
+
+    t.notEqual(source, output);
+    t.notEqual(source.a, output.a);
+    t.deepEqual(output, {
+        a: [2,4,6,9],
     });
 });
 
@@ -666,7 +629,7 @@ test('Invalid format for array remove item causes throw: index beyond bounds of 
     try {
         const output = patchi(source, {
             a: [
-                [patchi.act.removeArrayItem, 3],
+                [patchi.act.remove, 3],
             ],
         });
         t.ok(output === false);
@@ -691,7 +654,7 @@ test('Invalid format for array remove item causes throw: negative index', (t) =>
     try {
         const output = patchi(source, {
             a: [
-                [patchi.act.removeArrayItem, -1],
+                [patchi.act.remove, -1],
             ],
         });
         t.ok(output === false);
@@ -715,8 +678,8 @@ test('Array changes can be nested', (t) => {
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 0, [
-                [patchi.act.changeArrayItem, 1, 'middle'],
+            [patchi.act.change, 0, [
+                [patchi.act.change, 1, 'middle'],
             ]],
         ],
     });
@@ -750,33 +713,12 @@ test('Array changes can be nested and can retain the same references if nothing 
 
     const output = patchi(source, {
         a: [
-            [patchi.act.changeArrayItem, 0, [
-                [patchi.act.changeArrayItem, 1, 2],
+            [patchi.act.change, 0, [
+                [patchi.act.change, 1, 2],
             ]],
         ],
     });
 
     t.equal(source, output);
     t.deepEqual(source, output);
-});
-
-test('Non-change with empty array', (t) => {
-    t.plan(2);
-
-    const source = {
-        a: [
-            [
-                1,
-                2,
-            ],
-            {},
-        ],
-    };
-
-    const output = patchi(source, {
-        a: [],
-    });
-
-    t.equal(source, output);
-    t.equal(source.a, output.a);
 });

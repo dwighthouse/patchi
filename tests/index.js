@@ -1,11 +1,14 @@
-require('../tests/sections/arrayChanges.js');
+require('../tests/sections/arrayInvalidSyntax.js');
+require('../tests/sections/arrayManagedChanges.js');
 require('../tests/sections/arrayMultipleChangeSequence.js');
+require('../tests/sections/arrayNormalChanges.js');
+require('../tests/sections/arrayPush.js');
 require('../tests/sections/arrayRoot.js');
 require('../tests/sections/deepSetValue.js');
 require('../tests/sections/objectMultipleChangeSequence.js');
 require('../tests/sections/objectSymbols.js');
 require('../tests/sections/propertyChanges.js');
 require('../tests/sections/rootValue.js');
-require('../tests/sections/setEmptyValues.js');
+require('../tests/sections/setEmptyObject.js');
 require('../tests/sections/setTypeCrossover.js');
 require('../tests/sections/setValue.js');

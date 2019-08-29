@@ -87,15 +87,24 @@ test('Change -0 value', (t) => {
     t.notOk(areEqual(source.a, output.a));
 });
 
-test('Non-change with empty object', (t) => {
-    t.plan(2);
+test('Assigning empty object to source object applies no changes', (t) => {
+    t.plan(3);
 
     const source = {
-        a: 0,
+        a: {
+            b: 1,
+        },
     };
 
-    const output = patchi(source, {});
+    const output = patchi(source, {
+        a: {},
+    });
 
     t.equal(source, output);
     t.equal(source.a, output.a);
+    t.deepEqual(output, {
+        a: {
+            b: 1,
+        },
+    });
 });
