@@ -1,6 +1,6 @@
 {
   "name": "patchi",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Original data and change data goes in, immutably applied patched data comes out. Maximizes saved references while minimizing iteration.",
   "scripts": {
     "test": "nyc tape tests/index.js | tap-nyc",

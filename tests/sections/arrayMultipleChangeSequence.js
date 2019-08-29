@@ -13,22 +13,26 @@ test('Change multiple items in a single array simultaneously', (t) => {
 
     const output = patchi(source, [
         // No change
-        [patchi.act.changeArrayItem, 0, 0],
+        [patchi.act.change, 0, 0],
         // Actual change
-        [patchi.act.changeArrayItem, 1, 1],
+        [patchi.act.change, 1, 1],
         // Insert new item
-        [patchi.act.insertArrayItem, 2, 2],
+        [patchi.act.insert, 2, 2],
         // Change old item at new position
-        [patchi.act.changeArrayItem, 3, 3],
+        [patchi.act.change, 3, 3],
         // Remove original item
-        [patchi.act.removeArrayItem, 0],
+        [patchi.act.remove, 0],
         // Add new item at new position
-        [patchi.act.insertArrayItem, 3, 4],
+        [patchi.act.insert, 3, 4],
+        // Push to end
+        [patchi.act.push, 5],
         // Add new item past end of array
-        [patchi.act.insertArrayItem, 8, 9],
+        [patchi.act.insert, 8, 9],
+        // Change already changed value
+        [patchi.act.change, 0, 10],
     ]);
 
-    const expectedOutput = [1, 2, 3, 4, {}];
+    const expectedOutput = [10, 2, 3, 4, {}, 5];
     expectedOutput[8] = 9;
 
     t.notEqual(source, output);

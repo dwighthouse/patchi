@@ -11,7 +11,7 @@ test('Root can be array', (t) => {
     ];
 
     const output = patchi(source, [
-        [patchi.act.changeArrayItem, 0, 'first'],
+        [patchi.act.change, 0, 'first'],
     ]);
 
     t.notEqual(source, output);
@@ -35,8 +35,8 @@ test('Root array changes can be nested', (t) => {
     ];
 
     const output = patchi(source, [
-        [patchi.act.changeArrayItem, 0, [
-            [patchi.act.changeArrayItem, 1, 'middle'],
+        [patchi.act.change, 0, [
+            [patchi.act.change, 1, 'middle'],
         ]],
     ]);
 

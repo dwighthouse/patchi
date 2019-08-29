@@ -15,7 +15,7 @@ test('Change multiple keys in a single object simultaneously', (t) => {
     const output = patchi(source, {
         a: 0, // Change
         b: 1, // No change
-        d: patchi.act.deleteKey,
+        d: patchi.act.delete,
     });
 
     const expectedOutput = [1, 2, 3, 4, {}];

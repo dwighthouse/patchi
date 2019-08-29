@@ -28,7 +28,7 @@ test('Remove property', (t) => {
     };
 
     const output = patchi(source, {
-        b: patchi.act.deleteKey,
+        b: patchi.act.delete,
     });
 
     t.notEqual(source, output);
