@@ -1,5 +1,71 @@
 const freeze = Object.freeze;
 
+const deleteKeySentinal = freeze(['Delete Key']);
+const createEmptyObjectSentinal = freeze(['Create Empty Object']);
+const changeItemAtSentinal = freeze(['Change Item At']);
+const insertItemAtSentinal = freeze(['Insert Item At']);
+const removeItemAtSentinal = freeze(['Remove Item At']);
+const pushItemSentinal = freeze(['Push Item']);
+const assignReferenceSentinal = freeze(['Assign Reference']);
+
+const sentinals = [
+    deleteKeySentinal,
+    createEmptyObjectSentinal,
+    changeItemAtSentinal,
+    insertItemAtSentinal,
+    removeItemAtSentinal,
+    pushItemSentinal,
+    assignReferenceSentinal,
+];
+
+const actions = {
+    deleteKeySentinal: (key) => {
+        return {
+            s: deleteKeySentinal,
+            i: key,
+        };
+    },
+    createEmptyObject: () => {
+        return {
+            s: deleteKeySentinal,
+        };
+    },
+    changeItemAt: (index, value) => {
+        return {
+            s: deleteKeySentinal,
+            i: index,
+            v: value,
+        };
+    },
+    insertItemAt: (index, value) => {
+        return {
+            s: insertItemAtSentinal,
+            i: index,
+            v: value,
+        };
+    },
+    removeItemAt: (index) => {
+        return {
+            s: removeItemAtSentinal,
+            i: index,
+        };
+    },
+    pushItem: (value) => {
+        return {
+            s: pushItemSentinal,
+            v: value,
+        };
+    },
+    assignReference: (value) => {
+        return {
+            s: assignReferenceSentinal,
+            v: value,
+        };
+    },
+};
+
+
+
 const act = freeze({
     delete: freeze({delete:1}),
     emptyObject: freeze({emptyObject:1}),
@@ -15,16 +81,6 @@ const isObject = (v) => {
     return Object.prototype.toString.call(v) === '[object Object]';
 };
 
-const areEqual = (x, y) => {
-    if (x === y) {
-        // Handle non-equality of -0 and 0
-        return x !== 0 || 1 / x === 1 / y;
-    }
-
-    // Handle non-equality of NaN
-    return x !== x && y !== y;
-};
-
 const getAllKeys = (obj) => {
     return Object.keys(obj).concat(Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(obj).filter((sym) => {
         return obj.propertyIsEnumerable(sym);
@@ -32,7 +88,7 @@ const getAllKeys = (obj) => {
 };
 
 const genNewValue = (oldValue, newValue) => {
-    if (areEqual(oldValue, newValue)) {
+    if (Object.is(oldValue, newValue)) {
         return oldValue;
     }
 
@@ -150,7 +206,7 @@ const deepSetObject = (source, changes) => {
         const newValue = genNewValue(oldValue, changes[key]);
 
         // No change, do nothing
-        if (areEqual(oldValue, newValue)) {
+        if (Object.is(oldValue, newValue)) {
             continue;
         }
 
@@ -180,6 +236,6 @@ const patchi = (source, changes) => {
     return genNewValue(source, changes);
 };
 
-patchi.act = act;
+patchi.actions = actions;
 
 module.exports = freeze(patchi);
